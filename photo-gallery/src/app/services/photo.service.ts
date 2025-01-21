@@ -21,13 +21,7 @@ export class PhotoService {
     const locationPermission = await this.requestPermission('location');
     const cameraPermission = await this.requestPermission('camera');
 
-    if (!locationPermission) {
-      alert('Locatieservices zijn uitgeschakeld. Schakel locatieservices in om door te gaan.');
-      return;
-    }
-
-    if (!cameraPermission) {
-      console.error('Cameratoegang geweigerd.');
+    if (!locationPermission || !cameraPermission) {
       return;
     }
 
@@ -51,22 +45,61 @@ export class PhotoService {
   }
 
   private async requestPermission(permission: 'location' | 'camera'): Promise<boolean> {
-    if (permission === 'location') {
-      const status = await Geolocation.checkPermissions();
-      if (status.location === 'granted') {
-        return true;
-      }
-      const result = await Geolocation.requestPermissions();
-      return result.location === 'granted';
-    }
+    try {
+      if (permission === 'location') {
+        const status = await Geolocation.checkPermissions();
+        if (status.location === 'granted') {
+          return true;
+        }
 
-    if (permission === 'camera') {
-      const status = await Camera.checkPermissions();
-      if (status.camera === 'granted') {
+        const result = await Geolocation.requestPermissions();
+        if (result.location !== 'granted') {
+          const alert = document.createElement('ion-alert');
+          alert.header = 'Locatieservices uitgeschakeld';
+          alert.message = 'Schakel locatieservices in om door te gaan.';
+          alert.buttons = ['OK'];
+
+          document.body.appendChild(alert);
+          await alert.present();
+          return false;
+        }
+
         return true;
       }
-      const result = await Camera.requestPermissions();
-      return result.camera === 'granted';
+
+      if (permission === 'camera') {
+        const status = await Camera.checkPermissions();
+        if (status.camera === 'granted') {
+          return true;
+        }
+
+        const result = await Camera.requestPermissions();
+        if (result.camera !== 'granted') {
+          const alert = document.createElement('ion-alert');
+          alert.header = 'Camera toegang geweigerd';
+          alert.message = 'Sta toegang tot de camera toe om door te gaan.';
+          alert.buttons = ['OK'];
+
+          document.body.appendChild(alert);
+          await alert.present();
+          return false;
+        }
+
+        return true;
+      }
+    } catch (error) {
+      if (error instanceof Error && error.message.includes('Location services are not enabled')) {
+        const alert = document.createElement('ion-alert');
+        alert.header = 'Locatieservices uitgeschakeld';
+        alert.message = 'Schakel locatieservices in via de instellingen van uw apparaat.';
+        alert.buttons = ['OK'];
+
+        document.body.appendChild(alert);
+        await alert.present();
+      } else {
+        console.error('Onbekende fout bij het aanvragen van permissies:', error);
+      }
+      return false;
     }
 
     return false;
