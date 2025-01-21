@@ -1,24 +1,11 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>
-      Photo gallery
-    </ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content class="bg-gray-100 p-4 rounded-lg shadow-md">
+  <h1 class="text-center text-2xl m-4">Schade Bewijs</h1>
 
-<ion-content>
-  <ion-grid>
-    <ion-row>
-      <ion-col size="6" *ngFor="let photo of photoService.photos; index as position">
-        <ion-img [src]="photo.webviewPath"></ion-img>
-      </ion-col>
-    </ion-row>
-  </ion-grid>
-
-  
-  <ion-fab vertical="bottom" horizontal="center" slot="fixed">
-    <ion-fab-button (click)="addPhotoToGallery()">
-      <ion-icon name="camera"></ion-icon>
+  <ion-fab vertical="center" horizontal="center" slot="fixed">
+    <ion-fab-button 
+      (click)="addPhotoToGallery()"
+      class="bg-blue-500 text-white rounded-full p-4 shadow-lg hover:bg-blue-600 transition ease-in-out duration-200">
+      <ion-icon name="camera" class="text-white"></ion-icon>
     </ion-fab-button>
   </ion-fab>
 </ion-content>

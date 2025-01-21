@@ -1,0 +1,20 @@
+.photo-container {
+    display: flex;
+    align-items: center;
+    margin: 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+  }
+  
+  ion-img {
+    width: 100px;
+    height: 100px;
+    margin-right: 10px;
+  }
+  
+  .location {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  

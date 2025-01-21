@@ -1,4 +1,5 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { PhotoService } from '../services/photo.service';
 
 @Component({
   selector: 'app-tab3',
@@ -6,8 +7,8 @@ import { Component } from '@angular/core';
   styleUrls: ['tab3.page.scss'],
   standalone: false,
 })
-export class Tab3Page {
+export class Tab3Page{
 
-  constructor() {}
+  constructor(public photoService: PhotoService) { }
 
 }

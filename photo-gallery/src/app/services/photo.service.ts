@@ -2,129 +2,159 @@ import { Injectable } from '@angular/core';
 import { Camera, CameraResultType, CameraSource, Photo } from '@capacitor/camera';
 import { Capacitor } from '@capacitor/core';
 import { Filesystem, Directory } from '@capacitor/filesystem';
-import { Preferences } from '@capacitor/preferences';
 import { Platform } from '@ionic/angular';
+import { Geolocation } from '@capacitor/geolocation';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PhotoService {
-  public photos: UserPhoto[] = [];
-  private PHOTO_STORAGE: string = 'photos';
-  private platform: Platform;
-
-  constructor(platform: Platform) {
-    this.platform = platform;
-  }
+  constructor(
+    private platform: Platform,
+    private http: HttpClient
+  ) {}
 
   public async addNewToGallery() {
-    // Take a photo
+    // Vraag toestemmingen
+    const locationPermission = await this.requestPermission('location');
+    const cameraPermission = await this.requestPermission('camera');
+
+    if (!locationPermission) {
+      alert('Locatieservices zijn uitgeschakeld. Schakel locatieservices in om door te gaan.');
+      return;
+    }
+
+    if (!cameraPermission) {
+      console.error('Cameratoegang geweigerd.');
+      return;
+    }
+
+    // Vraag om locatie-informatie
+    const position = await Geolocation.getCurrentPosition();
+    const latitude = position.coords.latitude;
+    const longitude = position.coords.longitude;
+
+    // Neem een foto
     const capturedPhoto = await Camera.getPhoto({
       resultType: CameraResultType.Uri,
       source: CameraSource.Camera,
       quality: 100
     });
 
-    const savedImageFile = await this.savePicture(capturedPhoto);
-    this.photos.unshift(savedImageFile);
+    // Bewaar de foto lokaal
+    const savedImageFile = await this.savePicture(capturedPhoto, latitude, longitude);
 
-    this.photos.unshift({
-      filepath: "soon...",
-      webviewPath: capturedPhoto.webPath!
-    });
-
-    Preferences.set({
-      key: this.PHOTO_STORAGE,
-      value: JSON.stringify(this.photos),
-    });
+    // Stuur de foto naar de API
+    await this.uploadPhoto(savedImageFile, latitude, longitude);
   }
 
-  private async savePicture(photo: Photo) {
-    // Convert photo to base64 format, required by Filesystem API to save
+  private async requestPermission(permission: 'location' | 'camera'): Promise<boolean> {
+    if (permission === 'location') {
+      const status = await Geolocation.checkPermissions();
+      if (status.location === 'granted') {
+        return true;
+      }
+      const result = await Geolocation.requestPermissions();
+      return result.location === 'granted';
+    }
+
+    if (permission === 'camera') {
+      const status = await Camera.checkPermissions();
+      if (status.camera === 'granted') {
+        return true;
+      }
+      const result = await Camera.requestPermissions();
+      return result.camera === 'granted';
+    }
+
+    return false;
+  }
+
+  private async uploadPhoto(photo: UserPhoto, latitude: number, longitude: number) {
+    // Haal de afbeelding op als Blob
+    const response = await fetch(photo.webviewPath!);
+    const blob = await response.blob();
+
+    // Maak FormData aan en voeg de foto en andere gegevens toe
+    const formData = new FormData();
+    formData.append('image', blob, photo.filepath.split('/').pop()!);
+    formData.append('insuranceform', '20'); // Vervang '20' met de juiste insuranceId
+    formData.append('filename', photo.filepath.split('/').pop()!);
+    formData.append('xCord', latitude.toString());
+    formData.append('yCord', longitude.toString());
+    formData.append('date', new Date().toISOString().split('T')[0]);
+
+    const headers = new HttpHeaders();
+
+    this.http.post(`${environment.baseUrl}/images/`, formData, { headers }).subscribe(
+      (response) => {
+        console.log('Foto succesvol geüpload:', response);
+      },
+      (error) => {
+        console.error('Fout bij het uploaden van de foto:', error);
+      }
+    );
+  }
+
+  private async savePicture(photo: Photo, latitude: number, longitude: number) {
+    // Converteer foto naar base64 formaat
     const base64Data = await this.readAsBase64(photo);
-  
-    // Write the file to the data directory
+
+    // Schrijf bestand naar de gegevensmap
     const fileName = Date.now() + '.jpeg';
     const savedFile = await Filesystem.writeFile({
       path: fileName,
       data: base64Data,
       directory: Directory.Data
     });
-  
+
     if (this.platform.is('hybrid')) {
-      // Display the new image by rewriting the 'file://' path to HTTP
-      // Details: https://ionicframework.com/docs/building/webview#file-protocol
       return {
         filepath: savedFile.uri,
         webviewPath: Capacitor.convertFileSrc(savedFile.uri),
+        latitude: latitude,
+        longitude: longitude
       };
-    }
-    else {
-      // Use webPath to display the new image instead of base64 since it's
-      // already loaded into memory
+    } else {
       return {
         filepath: fileName,
-        webviewPath: photo.webPath
+        webviewPath: photo.webPath,
+        latitude: latitude,
+        longitude: longitude
       };
     }
   }
-  
 
   private async readAsBase64(photo: Photo) {
-    // "hybrid" will detect Cordova or Capacitor
     if (this.platform.is('hybrid')) {
-      // Read the file into base64 format
       const file = await Filesystem.readFile({
         path: photo.path!
       });
-  
+
       return file.data;
-    }
-    else {
-      // Fetch the photo, read as a blob, then convert to base64 format
+    } else {
       const response = await fetch(photo.webPath!);
       const blob = await response.blob();
-  
+
       return await this.convertBlobToBase64(blob) as string;
     }
   }
-  
+
   private convertBlobToBase64 = (blob: Blob) => new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onerror = reject;
     reader.onload = () => {
-        resolve(reader.result);
+      resolve(reader.result);
     };
     reader.readAsDataURL(blob);
   });
-
-  public async loadSaved() {
-    // Retrieve cached photo array data
-    const { value } = await Preferences.get({ key: this.PHOTO_STORAGE });
-    this.photos = (value ? JSON.parse(value) : []) as UserPhoto[];
-  
-    // Easiest way to detect when running on the web:
-    // “when the platform is NOT hybrid, do this”
-    if (!this.platform.is('hybrid')) {
-      // Display the photo by reading into base64 format
-      for (let photo of this.photos) {
-        // Read each saved photo's data from the Filesystem
-        const readFile = await Filesystem.readFile({
-            path: photo.filepath,
-            directory: Directory.Data
-        });
-  
-        // Web platform only: Load the photo as base64 data
-        photo.webviewPath = `data:image/jpeg;base64,${readFile.data}`;
-      }
-    }
-  }
-  
 }
 
 export interface UserPhoto {
   filepath: string;
   webviewPath?: string;
+  latitude?: number;
+  longitude?: number;
 }
-
-
