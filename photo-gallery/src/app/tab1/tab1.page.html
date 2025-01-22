@@ -1,17 +1,42 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
-    <ion-title>
-      Tab 1
-    </ion-title>
+    <ion-title>Gebruiker Beheer</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 1</ion-title>
-    </ion-toolbar>
-  </ion-header>
+<ion-content>
+  <div *ngIf="!user; else loggedInTemplate">
+    <!-- Login Form -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Inloggen</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item>
+          <ion-label position="floating">E-mail</ion-label>
+          <ion-input [(ngModel)]="email" type="email"></ion-input>
+        </ion-item>
+        <ion-item>
+          <ion-label position="floating">Wachtwoord</ion-label>
+          <ion-input [(ngModel)]="password" type="password"></ion-input>
+        </ion-item>
+        <ion-button expand="full" (click)="login()">Inloggen</ion-button>
+        <p *ngIf="error" class="error">{{ error }}</p>
+      </ion-card-content>
+    </ion-card>
+  </div>
 
-  <app-explore-container name="Tab 1 page"></app-explore-container>
+  <ng-template #loggedInTemplate>
+    <!-- User Info -->
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title>Welkom, {{ user?.email }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p>Gebruikers ID: {{ user?.id }}</p>
+        <p>Rollen: {{ user?.roles?.join(', ') }}</p>
+        <ion-button expand="full" color="danger" (click)="logout()">Uitloggen</ion-button>
+      </ion-card-content>
+    </ion-card>
+  </ng-template>
 </ion-content>
