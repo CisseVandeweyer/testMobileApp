@@ -111,7 +111,7 @@ export class Tab2Page implements OnInit, OnDestroy {
 
   uploadCapturedImages(): void {
     if (this.capturedImages.length > 0) {
-      this.photoService.uploadPhotos(this.capturedImages).then(() => {
+      this.photoService.uploadPhotos(this.capturedImages, this.insuranceId).then(() => {
         this.updateRequestedImagesFulfilled();
         this.capturedImages = [];
         this.refreshRequestedImages();
@@ -121,7 +121,7 @@ export class Tab2Page implements OnInit, OnDestroy {
   }
 
   refreshRequestedImages(): void {
-    const insuranceId = 146;
+    const insuranceId = this.insuranceId;
     this.fetchRequestedImages(insuranceId);
   }
 

@@ -2,6 +2,7 @@
 
   <!-- Requested Images Remaining -->
   <div *ngIf="requestedImages.length > 0 && capturedImages.length < requestedImages.length" class="mb-6">
+
     <h3 class="text-lg font-semibold text-gray-700 mb-3 text-center ">
       Je moet nog {{ requestedImages.length - capturedImages.length }} foto('s) maken.
     </h3>
@@ -24,7 +25,7 @@
         </div>
       </div>
 
-<!-- 
+      <!-- 
       <div class="text-center mt-4">
         <p>Current Angle (Calculated): {{ angle | number: '1.0-2' }}°</p>
         <p>Device Magnetic Heading: {{ magneticHeading | number: '1.0-2' }}°</p>
@@ -36,33 +37,31 @@
     </div>
 
     <!-- All Requested Images Captured -->
+
+
+  </div>
+  <!-- Captured Images Preview Section -->
+  <div *ngIf="capturedImages.length > 0" class="mb-6">
     <div *ngIf="requestedImages.length > 0 && capturedImages.length === requestedImages.length" class="mb-6">
       <h3 class="text-lg font-semibold text-center text-green-700">✅ Alle foto's zijn genomen!</h3>
       <p class="text-sm text-gray-500 text-center">Je kunt nog extra foto's toevoegen als je wilt.</p>
     </div>
 
-    <!-- Captured Images Preview Section -->
-    <div *ngIf="capturedImages.length > 0" class="mb-6">
-      <h3 class="text-lg font-semibold text-gray-700 mb-3">📷 Gemaakte Foto's</h3>
-      <div class="grid grid-cols-3 gap-2">
-        <div *ngFor="let image of capturedImages; let i = index" class="relative">
-          <!-- Image Thumbnail -->
-          <div class="relative w-full h-24 overflow-hidden rounded-md shadow-sm border">
-            <img [src]="image.webviewPath" alt="Image Preview" class="w-full h-full object-cover">
-            <!-- Delete Button Overlay -->
-            <button (click)="removeImage(i)"
-              class="absolute top-0 right-0 m-1 bg-red-500 text-white text-xs px-2 py-1 rounded-full shadow-md hover:bg-red-600 transition duration-200">
-              ✕
-            </button>
-          </div>
+    <h3 class="text-lg font-semibold text-gray-700 mb-3">📷 Gemaakte Foto's</h3>
+    <div class="grid grid-cols-3 gap-2">
+      <div *ngFor="let image of capturedImages; let i = index" class="relative">
+        <!-- Image Thumbnail -->
+        <div class="relative w-full h-24 overflow-hidden rounded-md shadow-sm border">
+          <img [src]="image.webviewPath" alt="Image Preview" class="w-full h-full object-cover">
+          <!-- Delete Button Overlay -->
+          <button (click)="removeImage(i)"
+            class="absolute top-0 right-0 m-1 bg-red-500 text-white text-xs px-2 py-1 rounded-full shadow-md hover:bg-red-600 transition duration-200">
+            ✕
+          </button>
         </div>
-
-
       </div>
     </div>
-
     ------------------------------------------------------------------------------
-
 
     <!-- Upload Images Button -->
     <div class="mt-6 flex justify-center">
@@ -71,6 +70,10 @@
       </ion-button>
     </div>
   </div>
+
+
+
+
 
   <div *ngIf="requestedImages.length === 0">
     <p>geen foto's aangevraagd</p>
