@@ -7,16 +7,30 @@ import { Geolocation } from '@capacitor/geolocation';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 import { Observable } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PhotoService {
+  insuranceId: number = 0; // Store the dynamic insuranceId
+
   constructor(
     private platform: Platform,
-    private http: HttpClient
+    private http: HttpClient,
+    private route: ActivatedRoute // Inject ActivatedRoute to access query parameters
+
   ) { }
 
+
+  ngOnInit(): void {
+    // Retrieve the insuranceId from query params or any other source
+    this.route.queryParams.subscribe((params) => {
+      if (params['insuranceId']) {
+        this.insuranceId = Number(params['insuranceId']); // Convert to number
+      }
+    });
+  }
 
   public async addNewPhoto(): Promise<UserPhoto | null> {
     // Request permissions
@@ -45,7 +59,7 @@ export class PhotoService {
   }
 
 
-  public async uploadPhotos(photos: UserPhoto[]): Promise<void> {
+  public async uploadPhotos(photos: UserPhoto[], insuranceId: number): Promise<void> {
     const headers = new HttpHeaders();
     const promises = photos.map(async (photo) => {
       const response = await fetch(photo.webviewPath!);
@@ -53,7 +67,7 @@ export class PhotoService {
 
       const formData = new FormData();
       formData.append('image', blob, photo.filepath.split('/').pop()!);
-      formData.append('insuranceform', '146');
+      formData.append('insuranceform', insuranceId.toString()); // Use the dynamic insuranceId
       formData.append('filename', photo.filepath.split('/').pop()!);
       formData.append('xCord', photo.latitude?.toString() || '');
       formData.append('yCord', photo.longitude?.toString() || '');
@@ -93,19 +107,17 @@ export class PhotoService {
     const savedImageFile = await this.savePicture(capturedPhoto, latitude, longitude);
 
     // Stuur de foto naar de API
-    await this.uploadPhoto(savedImageFile, latitude, longitude);
+    await this.uploadPhoto(savedImageFile, latitude, longitude, this.insuranceId);
   }
 
 
-  private async uploadPhoto(photo: UserPhoto, latitude: number, longitude: number) {
-    // Haal de afbeelding op als Blob
+  private async uploadPhoto(photo: UserPhoto, latitude: number, longitude: number, insuranceId: number) {
     const response = await fetch(photo.webviewPath!);
     const blob = await response.blob();
 
-    // Maak FormData aan en voeg de foto en andere gegevens toe
     const formData = new FormData();
     formData.append('image', blob, photo.filepath.split('/').pop()!);
-    formData.append('insuranceform', '146'); // Vervang '20' met de juiste insuranceId
+    formData.append('insuranceform', insuranceId.toString()); // Use the dynamic insuranceId
     formData.append('filename', photo.filepath.split('/').pop()!);
     formData.append('xCord', latitude.toString());
     formData.append('yCord', longitude.toString());
@@ -122,6 +134,7 @@ export class PhotoService {
       }
     );
   }
+
 
   private async savePicture(photo: Photo, latitude: number, longitude: number): Promise<UserPhoto> {
     const base64Data = await this.readAsBase64(photo);
