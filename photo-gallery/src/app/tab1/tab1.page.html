@@ -4,12 +4,12 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
-  <div *ngIf="!user; else loggedInTemplate">
-    <!-- Login Form -->
+<ion-content padding class="login-page background">
+  <div class="login-container">
     <ion-card>
       <ion-card-header>
         <ion-card-title>Inloggen</ion-card-title>
+        <ion-card-subtitle>Vul uw inloggegevens in</ion-card-subtitle>
       </ion-card-header>
       <ion-card-content>
         <ion-item>
@@ -20,23 +20,18 @@
           <ion-label position="floating">Wachtwoord</ion-label>
           <ion-input [(ngModel)]="password" type="password"></ion-input>
         </ion-item>
-        <ion-button expand="full" (click)="login()">Inloggen</ion-button>
-        <p *ngIf="error" class="error">{{ error }}</p>
+        <ion-button
+          expand="full"
+          color="success"
+          shape="round"
+          (click)="login()"
+          >Inloggen</ion-button
+        >
+        <div class="register-link">
+          <p>Nog geen account? Registreer dan op de website!</p>
+        </div>
       </ion-card-content>
     </ion-card>
   </div>
-
-  <ng-template #loggedInTemplate>
-    <!-- User Info -->
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>Welkom, {{ user?.email }}</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <p>Gebruikers ID: {{ user?.id }}</p>
-        <p>Rollen: {{ user?.roles?.join(', ') }}</p>
-        <ion-button expand="full" color="danger" (click)="logout()">Uitloggen</ion-button>
-      </ion-card-content>
-    </ion-card>
-  </ng-template>
+  <p *ngIf="error" class="error">{{ error }}</p>
 </ion-content>
