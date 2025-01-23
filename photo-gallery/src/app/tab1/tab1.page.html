@@ -30,13 +30,15 @@
     <!-- User Info -->
     <ion-card>
       <ion-card-header>
-        <ion-card-title>Welkom, {{ user?.email }}</ion-card-title>
+        <ion-card-title>Welkom, {{ user?.firstName }}</ion-card-title>
       </ion-card-header>
       <ion-card-content>
-        <p>Gebruikers ID: {{ user?.id }}</p>
-        <p>Rollen: {{ user?.roles?.join(', ') }}</p>
+        <p>email: {{ user?.email }}</p>
+        <p>Roll: {{ user?.userRole_id}}</p>
         <ion-button expand="full" color="danger" (click)="logout()">Uitloggen</ion-button>
       </ion-card-content>
     </ion-card>
+
+
   </ng-template>
 </ion-content>
