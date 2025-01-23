@@ -57,4 +57,9 @@ export class Tab3Page {
       },
     });
   }
+
+  navigateToTab2(insuranceId: number): void {
+    this.router.navigate(['/tabs/tab2/${insuranceId}'], { queryParams: { insuranceId: insuranceId } });
+
+  }
 }

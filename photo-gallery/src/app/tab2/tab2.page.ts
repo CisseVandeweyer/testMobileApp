@@ -3,6 +3,7 @@ import { PhotoService, UserPhoto } from '../services/photo.service';
 import { RequestedImageService } from '../services/requestedImage.service';
 import { Geolocation } from '@capacitor/geolocation';
 import { DeviceOrientation, DeviceOrientationCompassHeading } from '@awesome-cordova-plugins/device-orientation/ngx';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-tab2',
@@ -15,6 +16,7 @@ export class Tab2Page implements OnInit, OnDestroy {
   requestedImages: any[] = [];
   capturedImages: UserPhoto[] = []; // Store captured images
   currentRequestedImage: any; // Current requested image details
+  insuranceId: number = 0; // Store the dynamic insuranceId
 
 
   angle: number = 0; // Calculated arrow angle
@@ -31,16 +33,25 @@ export class Tab2Page implements OnInit, OnDestroy {
     public photoService: PhotoService,
     private requestedImageService: RequestedImageService,
     private changeDetectorRef: ChangeDetectorRef,
-    private deviceOrientation: DeviceOrientation // Inject DeviceOrientation service
+    private deviceOrientation: DeviceOrientation, // Inject DeviceOrientation service
+    private route: ActivatedRoute // Inject ActivatedRoute to access query parameters
+
   ) {}
 
   ngOnInit(): void {
-    const insuranceId = 146;
-    this.fetchRequestedImages(insuranceId);
+    // Retrieve the insuranceId from query params
+    this.route.queryParams.subscribe((params) => {
+        // Check if 'insuranceId' is there
+      if (params['insuranceId']) {
+        this.insuranceId = Number(params['insuranceId']);;
+        this.fetchRequestedImages(this.insuranceId);
+        console.log('banaan', this.fetchRequestedImages);
+      }
+    });
+
     this.trackUserLocation();
     this.startOrientationTracking();
   }
-
   ngOnDestroy(): void {
     if (this.watchId) {
       Geolocation.clearWatch({ id: this.watchId });

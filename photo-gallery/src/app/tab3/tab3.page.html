@@ -22,10 +22,9 @@
       </ion-card-header>
       <ion-card-content>
         <ion-list>
-          <ion-item *ngFor="let form of insuranceForms">
+          <ion-item *ngFor="let form of insuranceForms" (click)="navigateToTab2(form.id)">
             <ion-label>{{ form.id }}</ion-label>
             <ion-label>{{ form.field.name }}</ion-label>
-
           </ion-item>
         </ion-list>
       </ion-card-content>
