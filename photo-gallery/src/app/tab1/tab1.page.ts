@@ -8,7 +8,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { UserRoleService } from '../services/user-role.service';
 import { Observable } from 'rxjs';
 import { User } from '../dto/user-dto';
-
+import { InsuranceFormService } from '../services/insuranceform.service';
 @Component({
   selector: 'app-tab1',
   templateUrl: './tab1.page.html',
@@ -23,7 +23,7 @@ export class Tab1Page implements OnInit {
   error: string = '';
   userrole: string = '';
   isLoggedIn: boolean = false;
-
+  insuranceForms: any[] = []; // Array to hold insurance forms
   constructor(
     private userService: UserService,
     private router: Router,
@@ -91,6 +91,21 @@ export class Tab1Page implements OnInit {
   getUser(): Observable<any> {
     return this.userService.getUser();
   }
+  // getUser() {
+  //   this.userService.getUser().subscribe({
+  //     next: (response) => {
+  //       console.log('Gebruiker opgehaald:', response);
+  //       this.user = response;
+  //       if (this.user) {
+  //         this.getInsuranceForms(this.user.id); // Fetch insurance forms for the logged-in user
+  //       }
+  //     },
+  //     error: (err) => {
+  //       console.error('Gebruiker ophalen mislukt:', err);
+  //       this.user = null; // Reset de gebruiker bij een fout
+  //     },
+  //   });
+  // }
 
   logout(): void {
     this.userService.logout().subscribe({
@@ -105,3 +120,16 @@ export class Tab1Page implements OnInit {
     });
   }
 }
+// logout() {
+//   this.userService.logout().subscribe({
+//     next: () => {
+//       console.log('Uitgelogd');
+//       this.user = null; // Verwijder de ingelogde gebruiker
+//       this.insuranceForms = []; // Clear insurance forms
+//       this.router.navigate(['/']); // Navigeer naar de homepagina of een andere pagina
+//     },
+//     error: (err) => {
+//       console.error('Uitloggen mislukt:', err);
+//     },
+//   });
+// }

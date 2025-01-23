@@ -1,15 +1,42 @@
-<ion-header [translucent]="true">
+<ion-header>
   <ion-toolbar>
-    <ion-title>
-      Tab 3
-    </ion-title>
+    <ion-title>Verzekeringen</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">Tab 3</ion-title>
-    </ion-toolbar>
-  </ion-header>
+
+<ion-content>
+  <div *ngIf="!user; else loggedInTemplate">
+    <!-- Login Form -->
+    <ion-card>
+      <p>Log in to view</p>
+    </ion-card>
+  </div>
+
+  <ng-template #loggedInTemplate>
+
+    <!-- Insurance Forms -->
+    <ion-card *ngIf="insuranceForms.length > 0">
+      <ion-card-header>
+        <ion-card-title>Verzekeringsformulieren</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-list>
+          <ion-item *ngFor="let form of insuranceForms" (click)="navigateToTab2(form.id)">
+            <ion-label>{{ form.id }}</ion-label>
+            <ion-label>{{ form.field.name }}</ion-label>
+          </ion-item>
+        </ion-list>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card *ngIf="insuranceForms.length === 0">
+      <ion-card-header>
+        <ion-card-title>Geen verzekeringsformulieren</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <p>Je hebt nog geen verzekeringsformulieren.</p>
+      </ion-card-content>
+    </ion-card>
+  </ng-template>
 </ion-content>
