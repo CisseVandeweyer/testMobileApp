@@ -4,11 +4,8 @@
 
 export const environment = {
   production: false,
+  baseUrl: "http://192.168.0.223:8000/api",
 
-  // baseUrl: 'http://api-lb-1568128161.us-east-1.elb.amazonaws.com:8000/api',
-  baseUrl: "http://localhost:8000/api",
-  // baseUrl: 'http://10.146.36.142:8000/api',
-  // baseUrl: 'http://172.20.10.7:8000/api',
 };
 
 /*
