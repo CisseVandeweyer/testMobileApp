@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { User } from '../dto/user-dto';
 
 @Injectable({
   providedIn: 'root',
@@ -17,15 +18,19 @@ export class UserService {
    * @returns Observable met de serverrespons.
    */
   login(credentials: { email: string; password: string }): Observable<any> {
-    return this.http.post(`${this.apiUrl}/login`, credentials, { withCredentials: true });
+    return this.http.post(`${this.apiUrl}/login`, credentials, {
+      withCredentials: true,
+    });
   }
 
   /**
    * Haal de gegevens van de ingelogde gebruiker op.
    * @returns Observable met de gebruikersgegevens.
    */
-  getUser(): Observable<any> {
-    return this.http.get(`${this.apiUrl}/user`, { withCredentials: true });
+  getUser(): Observable<User> {
+    return this.http.get<User>(`${this.apiUrl}/user`, {
+      withCredentials: true,
+    });
   }
 
   /**
@@ -33,7 +38,11 @@ export class UserService {
    * @returns Observable met de logout-respons.
    */
   logout(): Observable<any> {
-    return this.http.post(`${this.apiUrl}/logout`, {}, { withCredentials: true });
+    return this.http.post(
+      `${this.apiUrl}/logout`,
+      {},
+      { withCredentials: true }
+    );
   }
 
   /**

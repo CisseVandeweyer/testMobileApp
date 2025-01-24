@@ -1,44 +1,62 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Gebruiker Beheer</ion-title>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content>
-  <div *ngIf="!user; else loggedInTemplate">
-    <!-- Login Form -->
-    <ion-card>
+<ion-content padding class="login-page background">
+  <div class="login-container">
+    <ion-card *ngIf="!isLoggedIn">
+      <!-- Login form -->
       <ion-card-header>
+        <ion-card-subtitle>Vul uw inloggegevens in</ion-card-subtitle>
         <ion-card-title>Inloggen</ion-card-title>
       </ion-card-header>
       <ion-card-content>
         <ion-item>
           <ion-label position="floating">E-mail</ion-label>
-          <ion-input [(ngModel)]="email" type="email"></ion-input>
+          <ion-input [(ngModel)]="email" type="email" required></ion-input>
         </ion-item>
         <ion-item>
           <ion-label position="floating">Wachtwoord</ion-label>
-          <ion-input [(ngModel)]="password" type="password"></ion-input>
+          <ion-input
+            [(ngModel)]="password"
+            type="password"
+            required
+          ></ion-input>
         </ion-item>
-        <ion-button expand="full" (click)="login()">Inloggen</ion-button>
-        <p *ngIf="error" class="error">{{ error }}</p>
+        <ion-button
+          expand="full"
+          color="success"
+          shape="round"
+          (click)="login()"
+          >Inloggen</ion-button
+        >
+        <div class="register-link">
+          <p>Nog geen account? Registreer dan op de website!</p>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <ion-card *ngIf="isLoggedIn">
+      <!-- Account details -->
+      <ion-card-header>
+        <ion-card-title>Welkom {{ user?.firstName }}</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+        <ion-item>
+          <ion-label>E-mail:</ion-label>
+          <div>{{ email }}</div>
+          <!-- Toon de e-mail als tekst -->
+        </ion-item>
+        <ion-item>
+          <ion-label>Rol:</ion-label>
+          <div>{{ userrole }}</div>
+          <!-- Toon de rol als tekst -->
+        </ion-item>
+        <ion-button
+          expand="full"
+          color="danger"
+          shape="round"
+          (click)="logout()"
+          >Uitloggen</ion-button
+        >
       </ion-card-content>
     </ion-card>
   </div>
-
-  <ng-template #loggedInTemplate>
-    <!-- User Info -->
-    <ion-card>
-      <ion-card-header>
-        <ion-card-title>Welkom, {{ user?.firstName }}</ion-card-title>
-      </ion-card-header>
-      <ion-card-content>
-        <p>email: {{ user?.email }}</p>
-        <p>Roll: {{ user?.userRole_id}}</p>
-        <ion-button expand="full" color="danger" (click)="logout()">Uitloggen</ion-button>
-      </ion-card-content>
-    </ion-card>
-
-
-  </ng-template>
+  <p *ngIf="error" class="error">{{ error }}</p>
 </ion-content>
