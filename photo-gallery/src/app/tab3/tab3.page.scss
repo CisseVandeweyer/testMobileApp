@@ -1,20 +1,55 @@
 .photo-container {
-    display: flex;
-    align-items: center;
-    margin: 10px;
-    padding: 10px;
-    border: 1px solid #ddd;
-  }
-  
-  ion-img {
-    width: 100px;
-    height: 100px;
-    margin-right: 10px;
-  }
-  
-  .location {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-  }
-  
+  display: flex;
+  align-items: center;
+  margin: 10px;
+  padding: 10px;
+  border: 1px solid #ddd;
+}
+
+ion-img {
+  width: 100px;
+  height: 100px;
+  margin-right: 10px;
+}
+
+.location {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+ion-card-title {
+  font-size: 1.5rem; /* Adjust the font size as needed */
+  color: #1b5e20; /* Darker green for card titles */
+}
+
+ion-header {
+  --background: var(--ion-color-success); /* Green background for the header */
+  color: white; /* White text color for the header */
+}
+
+ion-card {
+  --background: #76db7e;
+  color: #2e7d32;
+}
+
+ion-card-title {
+  color: #1b5e20; /* Darker green for card titles */
+}
+
+ion-label {
+  --background: var(--ion-color-success)
+  color: #388e3c; /* Green color for labels */
+}
+
+ion-item {
+  --background: var(--ion-color-light);
+  margin: 5px /* Dark gray text color for items */
+}
+
+ion-card-content {
+  --background: #76db7e;
+}
+
+ion-list{
+  --background: #76db7e;
+}

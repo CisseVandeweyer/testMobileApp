@@ -9,6 +9,7 @@ import { UserRoleService } from '../services/user-role.service';
 import { Observable } from 'rxjs';
 import { User } from '../dto/user-dto';
 import { InsuranceFormService } from '../services/insuranceform.service';
+
 @Component({
   selector: 'app-tab1',
   templateUrl: './tab1.page.html',
@@ -24,10 +25,12 @@ export class Tab1Page implements OnInit {
   userrole: string = '';
   isLoggedIn: boolean = false;
   insuranceForms: any[] = []; // Array to hold insurance forms
+
   constructor(
     private userService: UserService,
     private router: Router,
-    private userRoleService: UserRoleService
+    private userRoleService: UserRoleService,
+    private insuranceFormService: InsuranceFormService
   ) {}
 
   ngOnInit(): void {
@@ -53,11 +56,12 @@ export class Tab1Page implements OnInit {
             this.getUser().subscribe({
               next: (user) => {
                 this.user = user;
+                console.log('Ingelogd als:', user);
                 this.isLoggedIn = true;
 
                 // Controleer of userroleId beschikbaar is
                 if (user.userRole_id) {
-                  this.userRoleService.getUserRole(user.userRole_id).subscribe({
+                  this.userRoleService.getUserRole(user.id).subscribe({
                     next: (role) => {
                       this.userrole = role.role_name; // Update de userrole met de rol naam
                       this.error = '';
@@ -88,29 +92,27 @@ export class Tab1Page implements OnInit {
     }
   }
 
-  getUser(): Observable<any> {
-    return this.userService.getUser();
+  getUser(): Observable<User> {
+    return this.userService.getUser(); // Deze retourneert nu een Observable<User>
   }
-  // getUser() {
-  //   this.userService.getUser().subscribe({
-  //     next: (response) => {
-  //       console.log('Gebruiker opgehaald:', response);
-  //       this.user = response;
-  //       if (this.user) {
-  //         this.getInsuranceForms(this.user.id); // Fetch insurance forms for the logged-in user
-  //       }
-  //     },
-  //     error: (err) => {
-  //       console.error('Gebruiker ophalen mislukt:', err);
-  //       this.user = null; // Reset de gebruiker bij een fout
-  //     },
-  //   });
-  // }
+
+  getInsuranceForms(userId: number) {
+    this.insuranceFormService.getInsuranceformByUserId(userId).subscribe({
+      next: (response: any[]) => {
+        console.log('Verzekeringsformulieren opgehaald:', response);
+        this.insuranceForms = response; // Store insurance forms in the component
+      },
+      error: (err: any) => {
+        console.error('Verzekeringsformulieren ophalen mislukt:', err);
+      },
+    });
+  }
 
   logout(): void {
     this.userService.logout().subscribe({
       next: () => {
         this.user = null;
+        this.userrole = '';
         this.isLoggedIn = false;
         this.router.navigate(['/']);
       },
@@ -120,16 +122,3 @@ export class Tab1Page implements OnInit {
     });
   }
 }
-// logout() {
-//   this.userService.logout().subscribe({
-//     next: () => {
-//       console.log('Uitgelogd');
-//       this.user = null; // Verwijder de ingelogde gebruiker
-//       this.insuranceForms = []; // Clear insurance forms
-//       this.router.navigate(['/']); // Navigeer naar de homepagina of een andere pagina
-//     },
-//     error: (err) => {
-//       console.error('Uitloggen mislukt:', err);
-//     },
-//   });
-// }

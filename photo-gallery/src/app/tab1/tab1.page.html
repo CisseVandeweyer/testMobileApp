@@ -35,17 +35,19 @@
     <ion-card *ngIf="isLoggedIn">
       <!-- Account details -->
       <ion-card-header>
-        <ion-card-title>Mijn Account</ion-card-title>
+        <ion-card-title>Welkom {{ user?.firstName }}</ion-card-title>
       </ion-card-header>
       <ion-card-content>
         <ion-item>
           <ion-label>E-mail:</ion-label>
-          <ion-input value="{{ email }}" disabled></ion-input>
+          <div>{{ email }}</div>
+          <!-- Toon de e-mail als tekst -->
         </ion-item>
         <ion-item>
           <ion-label>Rol:</ion-label>
-          <ion-input value="{{ userrole }}" disabled></ion-input
-        ></ion-item>
+          <div>{{ userrole }}</div>
+          <!-- Toon de rol als tekst -->
+        </ion-item>
         <ion-button
           expand="full"
           color="danger"

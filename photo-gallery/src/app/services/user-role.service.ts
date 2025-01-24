@@ -12,8 +12,8 @@ export class UserRoleService {
 
   constructor(private http: HttpClient) {}
 
-  getUserRole(userroleId: number): Observable<userRole> {
-    return this.http.get<userRole>(`${this.apiUrl}/userrole/${userroleId}/`, {
+  getUserRole(userid: number): Observable<userRole> {
+    return this.http.get<userRole>(`${this.apiUrl}/userrole/${userid}/`, {
       withCredentials: true,
     });
   }
