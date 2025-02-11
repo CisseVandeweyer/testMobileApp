@@ -4,6 +4,8 @@ import { RequestedImageService } from '../services/requestedImage.service';
 import { Geolocation } from '@capacitor/geolocation';
 import { DeviceOrientation, DeviceOrientationCompassHeading } from '@awesome-cordova-plugins/device-orientation/ngx';
 import { ActivatedRoute } from '@angular/router';
+import * as L from 'leaflet';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-tab2',
@@ -18,59 +20,136 @@ export class Tab2Page implements OnInit, OnDestroy {
   currentRequestedImage: any; // Current requested image details
   insuranceId: number = 0; // Store the dynamic insuranceId
 
-
   angle: number = 0; // Calculated arrow angle
   magneticHeading: number | null = null; // Magnetic heading from the compass
 
   userLocation: { latitude: number; longitude: number } = { latitude: 0, longitude: 0 };
   targetLocation: { latitude: number; longitude: number } = { latitude: 0, longitude: 0 }; // Dynamically set target location
 
+  distance: number = 0; // Store the distance in meters
+
+  private marker: L.Marker | null = null; // To store the marker instance
+  markerx: number = 0;
+  markery: number = 0;
+
 
   private watchId: string | null = null;
   deviceHeading: number = 0;
+
+  private map: L.Map | null = null;
+
+  private distanceInterval: any; // Interval for updating distance every second
 
   constructor(
     public photoService: PhotoService,
     private requestedImageService: RequestedImageService,
     private changeDetectorRef: ChangeDetectorRef,
     private deviceOrientation: DeviceOrientation, // Inject DeviceOrientation service
-    private route: ActivatedRoute // Inject ActivatedRoute to access query parameters
+    private route: ActivatedRoute, // Inject ActivatedRoute to access query parameters
+    private router: Router // Inject the Router service
 
-  ) {}
+  ) { }
 
   ngOnInit(): void {
     // Retrieve the insuranceId from query params
     this.route.queryParams.subscribe((params) => {
-        // Check if 'insuranceId' is there
+      // Check if 'insuranceId' is there
       if (params['insuranceId']) {
-        this.insuranceId = Number(params['insuranceId']);;
+        this.insuranceId = Number(params['insuranceId']);
         this.fetchRequestedImages(this.insuranceId);
-        console.log('banaan', this.fetchRequestedImages);
       }
     });
-
     this.trackUserLocation();
     this.startOrientationTracking();
   }
+
   ngOnDestroy(): void {
     if (this.watchId) {
       Geolocation.clearWatch({ id: this.watchId });
     }
     window.removeEventListener('deviceorientation', this.handleOrientation);
+        // Clear the interval to stop updating the distance
+        if (this.distanceInterval) {
+          clearInterval(this.distanceInterval);
+        }
   }
+
+  startDistanceUpdate(): void {
+    // Update the distance every second (1000ms)
+    this.distanceInterval = setInterval(() => {
+      if (this.userLocation && this.targetLocation) {
+        this.updateArrowDirection(); // This will update the angle and the distance
+      }
+    }, 1000); // 1 second interval
+  }
+  
+
 
   fetchRequestedImages(insuranceId: number): void {
     this.requestedImageService.getImages(insuranceId).subscribe(
       (images: any) => {
-        this.requestedImages = images.filter((image: { fulfilled: any }) => !image.fulfilled);
+        this.requestedImages = images.filter((image: { fulfilled: boolean }) => !image.fulfilled);
         if (this.requestedImages.length > 0) {
-          this.setTargetLocation(0); // Set the first image as the target when available
+          this.setTargetLocation(0); // Set the first image as the target
+          this.initializeMap(); // Initialize the map when images are available
         }
       },
       (error: any) => {
         console.error('Error fetching images:', error);
       }
     );
+  }
+
+
+  private initializeMap(): void {
+    if (this.requestedImages.length > 0) {
+      this.map = L.map('map', {
+        center: [this.markerx || 0, this.markery || 0],
+        zoom: 16, // Closer zoom level
+        zoomControl: true,
+      });
+
+      // Add OpenStreetMap tile layer
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: 'Map data © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
+      }).addTo(this.map);
+
+      this.updateMarker();
+
+      // Force Leaflet to recalculate the map's size
+      setTimeout(() => {
+        this.map?.invalidateSize();
+      }, 0);
+    }
+  }
+
+  private updateMarker(): void {
+    // Define a custom icon
+    const customIcon = L.icon({
+      iconUrl: 'assets/marker.png', // Path to your custom marker icon
+      iconSize: [40, 40], // Size of the icon
+      iconAnchor: [20, 40], // Anchor point of the icon (bottom center)
+      popupAnchor: [0, -40], // Anchor point for the popup
+      shadowUrl: 'https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png', // Optional shadow image
+      shadowSize: [60, 38], // Size of the shadow
+    });
+
+    // Remove existing marker if present
+    if (this.marker) {
+      this.map?.removeLayer(this.marker);
+    }
+
+    // Check if the map is initialized before adding the marker
+    if (this.map) {
+      // Add a new marker at the current coordinates
+      this.marker = L.marker([this.markerx || 0, this.markery || 0], { icon: customIcon }).addTo(this.map);
+
+      // Add a popup to the marker
+      this.marker.bindPopup(`Maak hier een foto`).openPopup();
+
+      // Re-center the map on the marker
+      this.map.setView([this.markerx || 0, this.markery || 0], this.map.getZoom());
+    }
   }
 
   setTargetLocation(imageIndex: number): void {
@@ -80,8 +159,14 @@ export class Tab2Page implements OnInit, OnDestroy {
         latitude: image.xCord || 0,
         longitude: image.yCord || 0,
       };
-      this.currentRequestedImage = image; // Set the current image details
-      this.updateArrowDirection(); // Update arrow direction immediately
+
+      this.markerx = image.xCord || 0;
+      this.markery = image.yCord || 0;
+
+
+      this.updateMarker();
+      this.currentRequestedImage = image;
+      this.updateArrowDirection();
     }
   }
 
@@ -101,7 +186,6 @@ export class Tab2Page implements OnInit, OnDestroy {
     const confirmDelete = confirm('Weet je zeker dat je deze foto wilt verwijderen?');
     if (confirmDelete) {
       this.capturedImages.splice(index, 1);
-
       // Update target location for the next requested image if available
       if (this.capturedImages.length < this.requestedImages.length) {
         this.setTargetLocation(this.capturedImages.length);
@@ -112,10 +196,13 @@ export class Tab2Page implements OnInit, OnDestroy {
   uploadCapturedImages(): void {
     if (this.capturedImages.length > 0) {
       this.photoService.uploadPhotos(this.capturedImages, this.insuranceId).then(() => {
-        this.updateRequestedImagesFulfilled();
+        this.updateRequestedImagesFulfilled(); // Update the fulfilled status of requested images
         this.capturedImages = [];
         this.refreshRequestedImages();
         this.changeDetectorRef.detectChanges();
+
+        this.router.navigate(['/tab3']);
+
       });
     }
   }
@@ -125,6 +212,7 @@ export class Tab2Page implements OnInit, OnDestroy {
     this.fetchRequestedImages(insuranceId);
   }
 
+  // Mark images as fulfilled in the database after upload
   updateRequestedImagesFulfilled(): void {
     this.capturedImages.forEach((capturedImage, index) => {
       const requestedImage = this.requestedImages[index];
@@ -140,7 +228,6 @@ export class Tab2Page implements OnInit, OnDestroy {
       }
     });
   }
-
   async trackUserLocation(): Promise<void> {
     try {
       const hasPermission = await Geolocation.checkPermissions();
@@ -151,7 +238,7 @@ export class Tab2Page implements OnInit, OnDestroy {
           return;
         }
       }
-
+  
       this.watchId = await Geolocation.watchPosition(
         { enableHighAccuracy: true },
         (position, err) => {
@@ -159,21 +246,26 @@ export class Tab2Page implements OnInit, OnDestroy {
             console.error('Error watching position:', err);
             return;
           }
-
+  
           if (position) {
             this.userLocation = {
               latitude: position.coords.latitude,
               longitude: position.coords.longitude,
             };
-
+  
+            // Update the arrow direction (this will also update distance)
             this.updateArrowDirection();
           }
         }
       );
+  
+      // Start updating the distance regularly
+      this.startDistanceUpdate(); // Ensure continuous distance update
     } catch (error) {
       console.error('Error tracking user location:', error);
     }
   }
+  
 
   startOrientationTracking(): void {
     // Use both deviceorientation (for compass heading) and DeviceOrientation plugin
@@ -201,8 +293,34 @@ export class Tab2Page implements OnInit, OnDestroy {
   updateArrowDirection(): void {
     const bearing = this.calculateBearing(this.userLocation, this.targetLocation);
     this.angle = (bearing - this.deviceHeading + 360) % 360;
+
+    // Calculate the distance between the user and the target location
+    this.distance = this.calculateDistance(this.userLocation, this.targetLocation);
+
     this.changeDetectorRef.detectChanges();
+    console.log('User: ',this.userLocation)
+    console.log('Target: ',this.targetLocation)
+    console.log('Distance: ',this.distance)
+
   }
+
+  // Calculate distance using Haversine formula
+  calculateDistance(start: { latitude: number; longitude: number }, end: { latitude: number; longitude: number }): number {
+    const R = 6371e3; // Earth's radius in meters
+    const φ1 = this.degreesToRadians(start.latitude);
+    const φ2 = this.degreesToRadians(end.latitude);
+    const Δφ = this.degreesToRadians(end.latitude - start.latitude);
+    const Δλ = this.degreesToRadians(end.longitude - start.longitude);
+
+    const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
+      Math.cos(φ1) * Math.cos(φ2) *
+      Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
+
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+    return R * c; // Distance in meters
+  }
+
 
   calculateBearing(start: { latitude: number; longitude: number }, end: { latitude: number; longitude: number }): number {
     const startLat = this.degreesToRadians(start.latitude);
@@ -221,5 +339,10 @@ export class Tab2Page implements OnInit, OnDestroy {
 
   degreesToRadians(degrees: number): number {
     return degrees * (Math.PI / 180);
+  }
+
+  navigateToTab3(): void {
+    this.router.navigate(['/tabs/tab3/']);
+
   }
 }
