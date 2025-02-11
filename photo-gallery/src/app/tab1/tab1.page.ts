@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { UserService } from '../services/user.service';
 import { Router } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
@@ -9,6 +9,8 @@ import { UserRoleService } from '../services/user-role.service';
 import { Observable } from 'rxjs';
 import { User } from '../dto/user-dto';
 import { InsuranceFormService } from '../services/insuranceform.service';
+import { TabsPage } from '../tabs/tabs.page';
+import { AuthService } from '../services/auth-service.service';
 
 @Component({
   selector: 'app-tab1',
@@ -30,14 +32,18 @@ export class Tab1Page implements OnInit {
     private userService: UserService,
     private router: Router,
     private userRoleService: UserRoleService,
-    private insuranceFormService: InsuranceFormService
+    private insuranceFormService: InsuranceFormService,
+    private cdRef: ChangeDetectorRef,
+    private tabs: TabsPage,
+    private authService: AuthService
   ) {}
 
   ngOnInit(): void {
-    this.getUser().subscribe({
+    this.authService.checkLoginStatus();
+    this.authService.user$.subscribe({
       next: (user) => {
         this.user = user;
-        this.isLoggedIn = true;
+        this.isLoggedIn = !!user;
       },
       error: (err) => {
         console.error('Gebruiker ophalen mislukt:', err);
@@ -49,58 +55,58 @@ export class Tab1Page implements OnInit {
 
   login(): void {
     if (this.email && this.password) {
-      this.userService
-        .login({ email: this.email, password: this.password })
-        .subscribe({
-          next: () => {
-            this.getUser().subscribe({
-              next: (user) => {
-                this.user = user;
-                console.log('Ingelogd als:', user);
-                this.isLoggedIn = true;
+      this.authService.login(this.email, this.password).subscribe({
+        next: (user) => {
+          this.user = user;
+          console.log('Ingelogd als:', user);
+          this.isLoggedIn = true;
 
-                // Controleer of userroleId beschikbaar is
-                if (user.userRole_id) {
-                  this.userRoleService.getUserRole(user.id).subscribe({
-                    next: (role) => {
-                      this.userrole = role.role_name; // Update de userrole met de rol naam
-                      this.error = '';
-                    },
-                    error: (err) => {
-                      console.error('Rol ophalen mislukt:', err);
-                      this.error = 'Rol ophalen mislukt.';
-                    },
-                  });
+          // Sla de gebruiker op in localStorage
+          localStorage.setItem('user', JSON.stringify(user));
+
+          if (user.userRole_id) {
+            this.userRoleService.getUserRole(user.id).subscribe({
+              next: (role) => {
+                this.userrole = role.role_name;
+                this.error = '';
+                if (this.userrole === 'Consultant') {
+                  this.tabs.setIsConsultant(true);
+                  this.router.navigate(['/tabs/verzekeraar/dashboard']);
                 } else {
-                  console.error('Gebruiker heeft geen userroleId');
-                  this.error = 'Gebruiker heeft geen rol.';
+                  this.tabs.setIsConsultant(false);
+                  this.router.navigate(['/tabs/tab3']);
                 }
+                this.cdRef.detectChanges();
               },
               error: (err) => {
-                console.error('Gebruiker ophalen mislukt:', err);
-                this.error = 'Gebruiker ophalen mislukt.';
+                console.error('Rol ophalen mislukt:', err);
+                this.error = 'Rol ophalen mislukt.';
               },
             });
-          },
-          error: (err) => {
-            console.error('Login fout:', err);
-            this.error = 'Inloggen mislukt. Controleer je gegevens.';
-          },
-        });
+          } else {
+            console.error('Gebruiker heeft geen userroleId');
+            this.error = 'Gebruiker heeft geen rol.';
+          }
+        },
+        error: (err) => {
+          console.error('Login fout:', err);
+          this.error = 'Inloggen mislukt. Controleer je gegevens.';
+        },
+      });
     } else {
       this.error = 'Voer je e-mail en wachtwoord in.';
     }
   }
 
   getUser(): Observable<User> {
-    return this.userService.getUser(); // Deze retourneert nu een Observable<User>
+    return this.userService.getUser();
   }
 
   getInsuranceForms(userId: number) {
     this.insuranceFormService.getInsuranceformByUserId(userId).subscribe({
       next: (response: any[]) => {
         console.log('Verzekeringsformulieren opgehaald:', response);
-        this.insuranceForms = response; // Store insurance forms in the component
+        this.insuranceForms = response;
       },
       error: (err: any) => {
         console.error('Verzekeringsformulieren ophalen mislukt:', err);
@@ -109,16 +115,10 @@ export class Tab1Page implements OnInit {
   }
 
   logout(): void {
-    this.userService.logout().subscribe({
-      next: () => {
-        this.user = null;
-        this.userrole = '';
-        this.isLoggedIn = false;
-        this.router.navigate(['/']);
-      },
-      error: (err) => {
-        console.error('Uitloggen mislukt:', err);
-      },
-    });
+    this.authService.logout();
+    this.user = null;
+    this.userrole = '';
+    this.isLoggedIn = false;
+    this.router.navigate(['/']);
   }
 }

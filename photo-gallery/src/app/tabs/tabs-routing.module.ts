@@ -9,28 +9,45 @@ const routes: Routes = [
     children: [
       {
         path: 'tab1',
-        loadChildren: () => import('../tab1/tab1.module').then(m => m.Tab1PageModule)
+        loadChildren: () =>
+          import('../tab1/tab1.module').then((m) => m.Tab1PageModule),
       },
       {
-        path: 'tab2/:insuranceId',  // Add a parameter to the route
-        loadChildren: () => import('../tab2/tab2.module').then(m => m.Tab2PageModule)
+        path: 'tab2/:insuranceId', // Add a parameter to the route
+        loadChildren: () =>
+          import('../tab2/tab2.module').then((m) => m.Tab2PageModule),
       },
       {
         path: 'tab3',
-        loadChildren: () => import('../tab3/tab3.module').then(m => m.Tab3PageModule)
+        loadChildren: () =>
+          import('../tab3/tab3.module').then((m) => m.Tab3PageModule),
+      },
+      {
+        path: 'verzekeraar/dashboard',
+        loadChildren: () =>
+          import('../verzekeraar/dashboard/dashboard.module').then(
+            (m) => m.DashboardPageModule
+          ),
+      },
+      {
+        path: 'verzekeraar/schadeclaims-user',
+        loadChildren: () =>
+          import(
+            '../verzekeraar/schadeclaims-user/schadeclaims-user.module'
+          ).then((m) => m.SchadeclaimsUserPageModule),
       },
       {
         path: '',
         redirectTo: '/tabs/tab1',
-        pathMatch: 'full'
-      }
-    ]
+        pathMatch: 'full',
+      },
+    ],
   },
   {
     path: '',
     redirectTo: '/tabs/tab1',
-    pathMatch: 'full'
-  }
+    pathMatch: 'full',
+  },
 ];
 
 @NgModule({
