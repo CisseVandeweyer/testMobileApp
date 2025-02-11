@@ -1,0 +1,22 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title class="text-center">Overzicht landbouwers</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list>
+    <ion-item *ngFor="let user of userList$ | async" class="user-item">
+      <ion-label class="user-label">
+        <h2>{{ user.firstName }} {{ user.lastName }}</h2>
+      </ion-label>
+      <ion-button
+        (click)="bekijkSchadeclaim(user.id)"
+        color="success"
+        class="user-button"
+      >
+        Bekijk schadeclaims
+      </ion-button>
+    </ion-item>
+  </ion-list>
+</ion-content>

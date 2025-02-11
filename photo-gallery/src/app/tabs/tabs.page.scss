@@ -1,35 +1,39 @@
-
 ion-tabs {
-    --background: #f4f4f4; /* Achtergrondkleur voor tabs */
-  
-    ion-tab-bar {
-      background-color: var(--ion-color-light);
-      border-top: 1px solid rgba(0, 128, 0, 0.2);
-  
-      ion-tab-button {
-        color: var(--ion-color-medium); /* Standaard tekstkleur */
-        --color-selected: var(--ion-color-success); /* Groene kleur voor actieve tab */
+  --background: black;
+
+  ion-tab-bar {
+    background-color: black;
+
+    ion-tab-button {
+      color: var(--ion-color-medium); /* Standaard tekstkleur */
+      --color-selected: var(
+        --ion-color-success
+      ); /* Groene kleur voor actieve tab */
+      transition: color 0.3s ease;
+      --background: black;
+
+      ion-icon {
+        font-size: 1.5rem; /* Icoon grootte */
+        margin-bottom: 0.3rem;
+        color: var(--ion-color-medium); /* Standaard icoonkleur */
         transition: color 0.3s ease;
-  
+      }
+
+      ion-label {
+        font-size: 0.85rem;
+      }
+
+      &.tab-selected {
+        color: var(--ion-color-success);
+
         ion-icon {
-          font-size: 1.5rem; /* Icoon grootte */
-          margin-bottom: 0.3rem;
-          color: var(--ion-color-medium); /* Standaard icoonkleur */
-          transition: color 0.3s ease;
-        }
-  
-        ion-label {
-          font-size: 0.85rem;
-        }
-  
-        &.tab-selected {
           color: var(--ion-color-success);
-  
-          ion-icon {
-            color: var(--ion-color-success);
-          }
         }
       }
     }
   }
-  
+
+  --ion-tabbar-color-selected: var(
+    --ion-color-success
+  ); /* Groene kleur voor geselecteerde tab */
+}

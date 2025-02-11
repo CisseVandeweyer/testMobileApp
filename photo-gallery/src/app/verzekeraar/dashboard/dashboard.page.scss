@@ -1,0 +1,31 @@
+ion-header {
+  ion-toolbar {
+    --background: #149c28; /* Groene achtergrond voor de toolbar */
+    ion-title {
+      color: white; /* Witte tekstkleur voor de titel */
+    }
+  }
+}
+
+ion-item {
+  --background: #8fdd95; /* Lichte groene achtergrond voor de lijstitems */
+}
+
+.user-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #237d31; /* Groene rand voor de lijstitems */
+  border-radius: 8px;
+  margin: 10px;
+}
+
+.user-label {
+  flex: 1;
+  color: black;
+}
+
+.user-button {
+  margin-left: 10px;
+  --color: black; /* Witte tekstkleur voor de knop */
+}

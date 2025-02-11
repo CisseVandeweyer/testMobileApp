@@ -62,4 +62,10 @@ export class UserService {
   getUsersByRoleIds(roleIds: number[]): Observable<any> {
     return this.http.post(`${this.apiUrl}/user/roles/`, roleIds);
   }
+
+  getUsersByAccessToUserField(userId: number): Observable<User[]> {
+    return this.http.get<User[]>(`${this.apiUrl}/user/access-field/`, {
+      params: { userId: userId.toString() },
+    });
+  }
 }
