@@ -1,98 +1,80 @@
 <ion-content class="bg-gray-100 p-4 rounded-lg shadow-md">
 
-  <!-- Requested Images Remaining -->
-  <div *ngIf="requestedImages.length > 0 && capturedImages.length < requestedImages.length" class="mb-6">
-
-    <h3 class="text-lg font-semibold text-gray-700 mb-3 text-center ">
-      Je moet nog {{ requestedImages.length - capturedImages.length }} foto('s) maken.
-    </h3>
-
-    <!-- Current Requested Image Details -->
-    <div class="p-4 border rounded-md shadow-sm bg-white">
-      ------------------------------------------------------------------------------
-      <h4 class="font-semibold text-gray-800 mb-2">
-        Foto {{ requestedImages[capturedImages.length]?.id }}
-      </h4>
-      <p class="text-gray-600"><strong>Info:</strong> {{ requestedImages[capturedImages.length]?.description || 'Geen
-        naam' }}</p>
-      <p class="text-gray-600"><strong>xCord:</strong> {{ requestedImages[capturedImages.length]?.xCord || 'N/A' }}</p>
-      <p class="text-gray-600"><strong>yCord:</strong> {{ requestedImages[capturedImages.length]?.yCord || 'N/A' }}</p>
-      <!-- arrow -->
-      <div class="arrow-container flex justify-center items-center mt-8"
-        style="position: absolute; top: 70%; left: 38%; transform: translate(-50%, -50%);">
-        <div class="arrow w-16 h-16 bg-red-500 transform z-50" [style.transform]="'rotate(' + angle + 'deg)'" style="clip-path: polygon(50% 0%, 100% 100%, 75% 100%, 75% 60%, 25% 60%, 25% 100%, 0% 100%); 
-             transform-origin: center center;">
-        </div>
-      </div>
-
-      <!-- 
-      <div class="text-center mt-4">
-        <p>Current Angle (Calculated): {{ angle | number: '1.0-2' }}°</p>
-        <p>Device Magnetic Heading: {{ magneticHeading | number: '1.0-2' }}°</p>
-        <p>User Location: Lat {{ userLocation.latitude }}, Long {{ userLocation.longitude }}</p>
-        <p *ngIf="currentRequestedImage">
-          Target Location: Lat {{ targetLocation.latitude }}, Long {{ targetLocation.longitude }}
-        </p>
-      </div> -->
-    </div>
-
-    <!-- All Requested Images Captured -->
-
-
+  <div *ngIf="requestedImages.length == 0">
+    <h4 class="norequest">
+      <strong>Neem een foto en verstuur ze naar jouw schadeclaim</strong>
+    </h4>
   </div>
-  <!-- Captured Images Preview Section -->
-  <div *ngIf="capturedImages.length > 0" class="mb-6">
-    <div *ngIf="requestedImages.length > 0 && capturedImages.length === requestedImages.length" class="mb-6">
-      <h3 class="text-lg font-semibold text-center text-green-700">✅ Alle foto's zijn genomen!</h3>
-      <p class="text-sm text-gray-500 text-center">Je kunt nog extra foto's toevoegen als je wilt.</p>
-    </div>
 
-    <h3 class="text-lg font-semibold text-gray-700 mb-3">📷 Gemaakte Foto's</h3>
-    <div class="grid grid-cols-3 gap-2">
+  <div *ngIf="capturedImages.length === requestedImages.length && requestedImages.length > 0">
+    <h4 class="norequest">
+      <strong>Alle foto's zijn genomen!</strong>
+    </h4>
+  </div>
+
+  <div *ngIf="requestedImages.length > 0 && capturedImages.length < requestedImages.length" id="map"></div>
+
+  <!-- Requested Images Remaining -->
+  <div *ngIf="requestedImages.length > 0 && capturedImages.length < requestedImages.length"
+    class="mt-0 border-green-400 rounded-b-lg shadow-lg bg-white relative fade-in">
+    <h4 class="font-semibold text-gray-700 text-center">
+      Je moet nog {{ requestedImages.length - capturedImages.length }} foto('s) maken
+    </h4>
+
+    <div class="p-4 bg-gray-50 border border-gray-300 rounded-md shadow-sm">
+      <h4 class=" text-gray-800">
+        <strong> Beschrijving:</strong> {{
+        requestedImages[capturedImages.length]?.description}}
+      </h4>
+    </div>
+  </div>
+
+  <!-- Taken Images -->
+  <div *ngIf="capturedImages.length > 0" class="mb-6">
+    <!-- Grid layout for images -->
+    <div class="grid grid-cols-3 gap-4 mb-6">
       <div *ngFor="let image of capturedImages; let i = index" class="relative">
         <!-- Image Thumbnail -->
-        <div class="relative w-full h-24 overflow-hidden rounded-md shadow-sm border">
-          <img [src]="image.webviewPath" alt="Image Preview" class="w-full h-full object-cover">
+        <div class="relative overflow-hidden rounded-md shadow-sm border">
+          <img [src]="image.webviewPath" alt="Image Preview" class="image object-cover mb-6">
           <!-- Delete Button Overlay -->
           <button (click)="removeImage(i)"
-            class="absolute top-0 right-0 m-1 bg-red-500 text-white text-xs px-2 py-1 rounded-full shadow-md hover:bg-red-600 transition duration-200">
+            class="absolute top-1 right-1 bg-red-500 text-white text-xs px-2 py-1 rounded-full shadow-md hover:bg-red-600 transition duration-200">
             ✕
           </button>
         </div>
       </div>
     </div>
-    ------------------------------------------------------------------------------
-
     <!-- Upload Images Button -->
-    <div class="mt-6 flex justify-center">
-      <ion-button (click)="uploadCapturedImages()" color="primary">
+    <div class="flex justify-center">
+      <ion-button class="upload-button" (click)="uploadCapturedImages()" (click)="navigateToTab3()">
         Upload Foto's
       </ion-button>
     </div>
   </div>
+  
+  <!-- Arrow and Distance -->
+  <div *ngIf="requestedImages.length > 0 && capturedImages.length < requestedImages.length" class="mb-6">
+    
+    <!-- Distance Display Above Arrow -->
+    <div class="distance-container flex justify-center items-center mt-4">
+      <h4 class="font-semibold text-green-700 text-center meters">
+        {{ distance | number: '1.0-0' }} m
+      </h4>
+    </div>
 
-
-
-
-
-  <div *ngIf="requestedImages.length === 0">
-    <p>geen foto's aangevraagd</p>
+    <div class="arrow-container flex justify-center items-center mt-8">
+      <div class="arrow w-16 h-16 bg-red-500 transform z-50" [style.transform]="'rotate(' + angle + 'deg)'" style="clip-path: polygon(50% 0%, 100% 100%, 75% 100%, 75% 60%, 25% 60%, 25% 100%, 0% 100%);
+           transform-origin: center center;">
+      </div>
+    </div>
   </div>
 
-  <!-- No Captured Images -->
-  <div *ngIf="capturedImages.length === 0" class="text-center text-gray-500 mt-6">
-    <p>Nog geen foto's genomen.</p>
-  </div>
-
-  <!-- Add Photo Button -->
+  <!-- Floating Camera Button -->
   <ion-fab vertical="bottom" horizontal="center" slot="fixed">
-    <ion-fab-button (click)="addPhotoToGallery()" class="bg-blue-500 text-white shadow-lg hover:bg-blue-600">
-      <ion-icon name="camera" class="text-white"></ion-icon>
+    <ion-fab-button (click)="addPhotoToGallery()" class="camera-button">
+      <ion-icon name="camera" class="camera-icon"></ion-icon>
     </ion-fab-button>
   </ion-fab>
-
-
-
-
 
 </ion-content>
