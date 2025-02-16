@@ -23,7 +23,7 @@ const routes: Routes = [
           import('../tab3/tab3.module').then((m) => m.Tab3PageModule),
       },
       {
-        path: 'verzekeraar/dashboard',
+        path: 'dashboard',
         loadChildren: () =>
           import('../verzekeraar/dashboard/dashboard.module').then(
             (m) => m.DashboardPageModule
@@ -52,5 +52,7 @@ const routes: Routes = [
 
 @NgModule({
   imports: [RouterModule.forChild(routes)],
+  exports: [RouterModule]  // <-- Add this line
+
 })
 export class TabsPageRoutingModule {}

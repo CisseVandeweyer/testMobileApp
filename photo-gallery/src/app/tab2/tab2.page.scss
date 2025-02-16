@@ -207,6 +207,7 @@ ion-button.upload-button:hover {
   border-radius: 0 0 8px 8px;
   /* Rounded bottom corners */
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 80%;
   /* Slight shadow for elevation */
   animation: fadeIn 1s ease-in-out;
   /* Fade-in animation */
@@ -214,6 +215,7 @@ ion-button.upload-button:hover {
   /* Start hidden */
   animation-fill-mode: forwards;
   /* Keep final state after animation */
+  padding-bottom: 0.5rem;
 }
 
 #map+div {
@@ -253,17 +255,3 @@ ion-button.upload-button:hover {
   margin-top: 15%;
 }
 
-.distance-container {
-  position: absolute;
-  top: 550px; // Adjust this value to move it just above the arrow
-  left: 50%;
-  transform: translateX(-50%);
-}
-
-
-.meters {
-  color: green;
-  font-size: 1rem;
-  font-weight: bold;
-  text-align: center;
-}

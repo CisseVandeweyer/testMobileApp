@@ -5,6 +5,7 @@ import { Observable } from 'rxjs';
 import { InsuranceFormResponseDto } from '../../dto/InsuranceFormResponseDto';
 import { CommonModule } from '@angular/common';
 import { IonicModule } from '@ionic/angular';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-schadeclaims-user',
@@ -19,7 +20,8 @@ export class SchadeclaimsUserPage implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private insuranceFormService: InsuranceFormService
+    private insuranceFormService: InsuranceFormService,
+    private router: Router
   ) {}
 
   ngOnInit() {
@@ -30,6 +32,8 @@ export class SchadeclaimsUserPage implements OnInit {
   }
 
   loadInsuranceForms() {
+    console.log(this.insuranceForms$)
+
     const user = JSON.parse(localStorage.getItem('user')!);
     this.insuranceForms$ =
       this.insuranceFormService.getInsuranceformsByUserIdByAccessToUserField(
@@ -38,7 +42,8 @@ export class SchadeclaimsUserPage implements OnInit {
       );
   }
 
-  viewSchadeclaim(arg0: number) {
-    console.log('View schadeclaim');
+  navigateToTab2(insuranceId: number): void {
+    this.router.navigate(['/tabs/tab2/${insuranceId}'], { queryParams: { insuranceId: insuranceId } });
+
   }
 }

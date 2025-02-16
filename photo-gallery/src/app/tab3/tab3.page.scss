@@ -1,50 +1,140 @@
+ion-header {
+  ion-toolbar {
+    --background: #149c28;
+
+    /* Groene achtergrond voor de toolbar */
+    ion-title {
+      margin-top: 2rem;
+      padding-bottom: 1rem;
+      text-align: center;
+      color: white;
+      /* Witte tekstkleur voor de titel */
+    }
+  }
+}
+
+
+.title{
+  text-align: center;
+  color: #237d31;
+}
+
 ion-content {
-  --background: #8fdd95;
+  --background: #f3ffe5; /* Background color */
+  position: relative; /* Ensure the content is positioned relatively */
+}
+
+
+.background-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('../../assets/fieldsightsolutions.png') no-repeat center center;
+  background-size: 40% auto;
+  background-blend-mode: multiply;
+  z-index: -1; /* Place the background behind other content */
+  opacity: 30%;
 }
 
 ion-card {
-  --background: rgb(22, 163, 74);;
+  
+  --background: #f3ffe5;
   color: #2e7d32;
+  border: none;
+  box-shadow: none;
+
+
 }
 
 ion-card-title {
   font-size: 1.5rem;
-  color: white; /* Darker green for card titles */
+  color: green; /* Darker green for card titles */
+  text-align: center;
 }
 
-.photo-container {
+ion-header {
+  ion-toolbar {
+    --background: #149c28; /* Groene achtergrond voor de toolbar */
+    ion-title {
+      color: white; /* Witte tekstkleur voor de titel */
+    }
+  }
+}
+
+ion-item {
+  --background: #8fdd95;
+  
+}
+
+ion-list {
+  margin-top: 5rem;
+}
+
+.user-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border: 1px solid #237d31;
+  /* Groene rand voor de lijstitems */
+  border-radius: 8px;
+  margin: 10px;
+}
+
+.user-label {
+  flex: 1;
+  color: black;
+}
+
+.user-button {
+  --background: #82ca88; // Donkergroene knop
+  --color: #094a0e; // Witte tekst
+  font-weight: bold;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+
+}
+
+h2{
+  font-weight: bold;
+}
+
+.user-info {
   display: flex;
   align-items: center;
-  margin: 10px;
-  padding: 10px;
-  border: 1px solid #ddd;
+  gap: 4px; /* Adjust spacing between icon and name */
 }
 
-ion-img {
-  width: 100px;
-  height: 100px;
-  margin-right: 10px;
+.user-icon {
+  font-size: 24px; /* Adjust icon size */
 }
 
-ion-label {
-  --background: var(--ion-color-success)
-  color: #388e3c; /* Green color for labels */
+.user-button {
+  display: flex;
+  align-items: center;
+  gap: 6px; /* Space between icon and text */
 }
 
-ion-list ion-item {
-  margin: 10px !important;
-  --background: rgb(22, 101, 52) !important;
-  border: none !important;
-  box-shadow: none !important;
+.list-md{
+  padding: 0;
+  margin: 0;
+  background-color: #f3ffe5;
+
+}
+
+.list-ios{
+    padding: 0;
+  margin: 0;
+  background-color: #f3ffe5;
 }
 
 
-ion-card-content {
-  --background: rgb(22, 163, 74);
+.camera-icon {
+  font-size: 25px; /* Adjust icon size */
+  margin-right: 0.5rem;
 }
-.list-ios {
-  --background: rgb(22, 101, 52) !important; /* Pas de achtergrondkleur aan */
-}
-.list-md {
-  --background: rgb(22, 163, 74) !important;
+
+.schade{
+  font-weight: bold;
 }

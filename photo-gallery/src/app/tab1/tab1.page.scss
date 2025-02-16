@@ -23,9 +23,12 @@ ion-content.background {
       padding: 1rem;
       border: 1px solid var(--ion-color-success);
       box-shadow: 0px 4px 6px rgba(0, 128, 0, 0.1);
+      border-color: #8fdd95;;
       margin: 0 auto; // Centreren van de ion-card
       position: absolute; // Voeg position: absolute toe aan de ion-card
-      --background: rgb(30, 30, 30); // Voorbeeld van achtergrond kleur
+      // --background: rgb(30, 30, 30); // Voorbeeld van achtergrond kleur
+      --background: linear-gradient(180deg, #202220, #101010);
+
 
       ion-card-header {
         text-align: center;
@@ -37,17 +40,25 @@ ion-content.background {
         }
 
         ion-card-subtitle {
-          font-size: 1rem;
-          color: rgba(0, 128, 0, 0.8);
+          font-size: 0.8rem;
+          color: #8fdd95;;
+          margin-top: 1.5rem;
+          margin-bottom: 0.5rem;
+        }
+
+        ion-card-title{
+          font-size: 2rem;
+          color: #8fdd95;;
         }
       }
 
       ion-item {
         margin-bottom: 1rem;
         --background: black;
+        border-radius: 5%;
 
         ion-label {
-          color: var(--ion-color-success);
+          color: #8fdd95;;
         }
 
         ion-input {
@@ -84,6 +95,8 @@ ion-content.background {
           }
         }
       }
+
+
     }
   }
 }
@@ -93,3 +106,6 @@ ion-content.background {
   font-size: 0.9em;
   margin-top: 10px;
 }
+
+
+

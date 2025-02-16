@@ -1,22 +1,67 @@
 ion-header {
   ion-toolbar {
-    --background: #237d31; /* Groene achtergrond voor de toolbar */
+    --background: #149c28;
+
+    /* Groene achtergrond voor de toolbar */
     ion-title {
-      color: black;
+      margin-top: 2rem;
+      padding-bottom: 1rem;
+      text-align: center;
+      color: white;
+      /* Witte tekstkleur voor de titel */
     }
   }
 }
 
-ion-item {
-  --background: #8fdd95; /* Lichte groene achtergrond voor de lijstitems */
+ion-card{
+  background-color: #f3ffe5;
+  text-align: center;
+  border: none;
+  box-shadow: none;
+  color: black;
+  ion-card-header{
+
+    ion-card-title{
+      color: rgb(81, 80, 80);
+    }
+  }
+  
 }
+
+ion-item {
+  --background: #8fdd95;
+  /* Lichte groene achtergrond voor de lijstitems */
+}
+
+ion-content {
+  --background: #f3ffe5;
+  position: relative;
+
+}
+
+.background-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('../../../assets/fieldsightsolutions.png') no-repeat center center;
+  background-size: 40% auto;
+  background-blend-mode: multiply;
+  z-index: -1;
+  /* Place the background behind other content */
+  opacity: 30%;
+}
+
 
 .claim-item {
   display: flex;
   justify-content: space-between;
-  align-items: center; /* Witte achtergrond voor de lijstitems */
+  align-items: center;
+  /* Witte achtergrond voor de lijstitems */
   margin: 10px;
-  border: 1px solid #237d31; /* Groene rand voor de lijstitems */
+  border: 1px solid #237d31;
+  /* Groene rand voor de lijstitems */
   border-radius: 8px;
 }
 
@@ -25,7 +70,33 @@ ion-item {
   color: black;
 }
 
-.claim-button {
-  margin-left: 10px;
-  --color: white; /* Witte tekstkleur voor de knop */
+h2 {
+  font-weight: bold;
+}
+
+.list-md {
+  padding: 0;
+  margin: 0;
+  background-color: #f3ffe5;
+
+}
+
+.list-ios {
+  padding: 0;
+  margin: 0;
+  background-color: #f3ffe5;
+}
+
+.user-button {
+  --background: #82ca88; // Donkergroene knop
+  --color: #094a0e; // Witte tekst
+  font-weight: bold;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+
+}
+
+.camera-icon {
+  font-size: 25px; /* Adjust icon size */
+  margin-right: 0.5rem;
 }

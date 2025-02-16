@@ -5,18 +5,24 @@
 </ion-header>
 
 <ion-content>
+  <div class="background-image"></div>
+
   <ion-list>
     <ion-item *ngFor="let user of userList$ | async" class="user-item">
       <ion-label class="user-label">
-        <h2>{{ user.firstName }} {{ user.lastName }}</h2>
+        <div class="user-info">
+          <ion-icon name="person-circle-outline" class="user-icon"></ion-icon>
+          <h2>{{ user.firstName }} {{ user.lastName }}</h2>
+        </div>
+        <p>{{ user.email }}</p>
       </ion-label>
-      <ion-button
-        (click)="bekijkSchadeclaim(user.id)"
-        color="success"
-        class="user-button"
-      >
-        Bekijk schadeclaims
+      <ion-button (click)="bekijkSchadeclaim(user.id)" class="user-button">
+        <ion-icon name="eye-outline" class="eye-icon"></ion-icon>
+        Bekijk
       </ion-button>
     </ion-item>
   </ion-list>
+
+
+  
 </ion-content>

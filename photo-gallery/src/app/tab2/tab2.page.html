@@ -56,12 +56,7 @@
   <!-- Arrow and Distance -->
   <div *ngIf="requestedImages.length > 0 && capturedImages.length < requestedImages.length" class="mb-6">
     
-    <!-- Distance Display Above Arrow -->
-    <div class="distance-container flex justify-center items-center mt-4">
-      <h4 class="font-semibold text-green-700 text-center meters">
-        {{ distance | number: '1.0-0' }} m
-      </h4>
-    </div>
+
 
     <div class="arrow-container flex justify-center items-center mt-8">
       <div class="arrow w-16 h-16 bg-red-500 transform z-50" [style.transform]="'rotate(' + angle + 'deg)'" style="clip-path: polygon(50% 0%, 100% 100%, 75% 100%, 75% 60%, 25% 60%, 25% 100%, 0% 100%);

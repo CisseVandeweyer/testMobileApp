@@ -5,15 +5,11 @@
       <ion-label>Account</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button *ngIf="isLoggedIn" tab="tab2" href="/tabs/tab2">
-      <ion-icon aria-hidden="true" name="images"></ion-icon>
-      <ion-label>Camera</ion-label>
-    </ion-tab-button>
 
     <!-- Alleen zichtbaar als ingelogd en als consultant -->
     <ion-tab-button
       *ngIf="isLoggedIn && isConsultant"
-      tab="verzekeraar/dashboard"
+      tab="dashboard"
       href="/tabs/verzekeraar/dashboard"
     >
       <ion-icon aria-hidden="true" name="briefcase-outline"></ion-icon>
