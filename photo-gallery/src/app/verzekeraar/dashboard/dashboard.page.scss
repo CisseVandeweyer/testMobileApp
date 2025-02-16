@@ -1,21 +1,55 @@
 ion-header {
   ion-toolbar {
-    --background: #149c28; /* Groene achtergrond voor de toolbar */
+    --background: #149c28;
+
+    /* Groene achtergrond voor de toolbar */
     ion-title {
-      color: white; /* Witte tekstkleur voor de titel */
+      margin-top: 2rem;
+      padding-bottom: 1rem;
+      text-align: center;
+      color: white;
+      /* Witte tekstkleur voor de titel */
     }
   }
 }
 
+
 ion-item {
-  --background: #8fdd95; /* Lichte groene achtergrond voor de lijstitems */
+  --background: #8fdd95;
+  /* Lichte groene achtergrond voor de lijstitems */
+  
 }
+
+ion-list {
+  margin-top: 5rem;
+}
+
+ion-content {
+  --background: #f3ffe5; /* Background color */
+  position: relative; /* Ensure the content is positioned relatively */
+}
+
+
+.background-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: url('../../../assets/fieldsightsolutions.png') no-repeat center center;
+  background-size: 40% auto;
+  background-blend-mode: multiply;
+  z-index: -1; /* Place the background behind other content */
+  opacity: 30%;
+}
+
 
 .user-item {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border: 1px solid #237d31; /* Groene rand voor de lijstitems */
+  border: 1px solid #237d31;
+  /* Groene rand voor de lijstitems */
   border-radius: 8px;
   margin: 10px;
 }
@@ -26,6 +60,48 @@ ion-item {
 }
 
 .user-button {
-  margin-left: 10px;
-  --color: black; /* Witte tekstkleur voor de knop */
+  --background: #82ca88; // Donkergroene knop
+  --color: #094a0e; // Witte tekst
+  font-weight: bold;
+  padding-top: 1rem;
+  padding-bottom: 1rem;
+
+}
+
+.list-md {
+  padding: 0;
+  margin: 0;
+  background-color: #f3ffe5;
+
+}
+
+.list-ios {
+  padding: 0;
+  margin: 0;
+  background-color: #f3ffe5;
+}
+
+h2{
+  font-weight: bold;
+}
+
+.user-info {
+  display: flex;
+  align-items: center;
+  gap: 4px; /* Adjust spacing between icon and name */
+}
+
+.user-icon {
+  font-size: 24px; /* Adjust icon size */
+}
+
+.user-button {
+  display: flex;
+  align-items: center;
+  gap: 6px; /* Space between icon and text */
+}
+
+.eye-icon {
+  font-size: 25px; /* Adjust icon size */
+  margin-right: 0.5rem;
 }

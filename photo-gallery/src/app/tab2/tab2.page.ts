@@ -26,7 +26,9 @@ export class Tab2Page implements OnInit, OnDestroy {
   userLocation: { latitude: number; longitude: number } = { latitude: 0, longitude: 0 };
   targetLocation: { latitude: number; longitude: number } = { latitude: 0, longitude: 0 }; // Dynamically set target location
 
-  distance: number = 0; // Store the distance in meters
+
+  private userMarker: L.Marker | null = null; // Store the user marker instance
+
 
   private marker: L.Marker | null = null; // To store the marker instance
   markerx: number = 0;
@@ -68,10 +70,10 @@ export class Tab2Page implements OnInit, OnDestroy {
       Geolocation.clearWatch({ id: this.watchId });
     }
     window.removeEventListener('deviceorientation', this.handleOrientation);
-        // Clear the interval to stop updating the distance
-        if (this.distanceInterval) {
-          clearInterval(this.distanceInterval);
-        }
+    // Clear the interval to stop updating the distance
+    if (this.distanceInterval) {
+      clearInterval(this.distanceInterval);
+    }
   }
 
   startDistanceUpdate(): void {
@@ -82,7 +84,7 @@ export class Tab2Page implements OnInit, OnDestroy {
       }
     }, 1000); // 1 second interval
   }
-  
+
 
 
   fetchRequestedImages(insuranceId: number): void {
@@ -104,7 +106,7 @@ export class Tab2Page implements OnInit, OnDestroy {
   private initializeMap(): void {
     if (this.requestedImages.length > 0) {
       this.map = L.map('map', {
-        center: [this.markerx || 0, this.markery || 0],
+        center: [this.userLocation.latitude || 0, this.userLocation.longitude || 0],
         zoom: 16, // Closer zoom level
         zoomControl: true,
       });
@@ -115,6 +117,7 @@ export class Tab2Page implements OnInit, OnDestroy {
       }).addTo(this.map);
 
       this.updateMarker();
+      this.updateUserMarker(); // Add user marker
 
       // Force Leaflet to recalculate the map's size
       setTimeout(() => {
@@ -253,19 +256,19 @@ export class Tab2Page implements OnInit, OnDestroy {
               longitude: position.coords.longitude,
             };
   
-            // Update the arrow direction (this will also update distance)
             this.updateArrowDirection();
+            this.updateUserMarker(); // Update user marker on the map
           }
         }
       );
   
-      // Start updating the distance regularly
       this.startDistanceUpdate(); // Ensure continuous distance update
     } catch (error) {
       console.error('Error tracking user location:', error);
     }
   }
   
+
 
   startOrientationTracking(): void {
     // Use both deviceorientation (for compass heading) and DeviceOrientation plugin
@@ -294,32 +297,29 @@ export class Tab2Page implements OnInit, OnDestroy {
     const bearing = this.calculateBearing(this.userLocation, this.targetLocation);
     this.angle = (bearing - this.deviceHeading + 360) % 360;
 
-    // Calculate the distance between the user and the target location
-    this.distance = this.calculateDistance(this.userLocation, this.targetLocation);
 
     this.changeDetectorRef.detectChanges();
-    console.log('User: ',this.userLocation)
-    console.log('Target: ',this.targetLocation)
-    console.log('Distance: ',this.distance)
+
 
   }
 
-  // Calculate distance using Haversine formula
-  calculateDistance(start: { latitude: number; longitude: number }, end: { latitude: number; longitude: number }): number {
-    const R = 6371e3; // Earth's radius in meters
-    const φ1 = this.degreesToRadians(start.latitude);
-    const φ2 = this.degreesToRadians(end.latitude);
-    const Δφ = this.degreesToRadians(end.latitude - start.latitude);
-    const Δλ = this.degreesToRadians(end.longitude - start.longitude);
+  private updateUserMarker(): void {
+    // Define a custom icon for the user
+    const userIcon = L.icon({
+      iconUrl: 'assets/user-marker.png', // Path to user icon image
+      iconSize: [40, 40], // Adjust size as needed
+      iconAnchor: [20, 40],
+      popupAnchor: [0, -40],
+    });
 
-    const a = Math.sin(Δφ / 2) * Math.sin(Δφ / 2) +
-      Math.cos(φ1) * Math.cos(φ2) *
-      Math.sin(Δλ / 2) * Math.sin(Δλ / 2);
-
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-
-    return R * c; // Distance in meters
+    if (this.userMarker) {
+      this.userMarker.setLatLng([this.userLocation.latitude, this.userLocation.longitude]);
+    } else {
+      this.userMarker = L.marker([this.userLocation.latitude, this.userLocation.longitude], { icon: userIcon }).addTo(this.map!);
+      this.userMarker.bindPopup('Jouw locatie');
+    }
   }
+
 
 
   calculateBearing(start: { latitude: number; longitude: number }, end: { latitude: number; longitude: number }): number {
